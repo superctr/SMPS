@@ -1,0 +1,7 @@
+/bin/*
+/obj/*
+*.lst
+smps.bin
+smps.lst
+*~
+*.swp

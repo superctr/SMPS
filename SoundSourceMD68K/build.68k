@@ -1,0 +1,12 @@
+	pusho
+	opt		l?,an+
+
+	include "src/eq.lib"
+	include "src/mcr.lib"
+
+	include "src/cnt.asm"
+	include	"src/cmd.asm"
+	include	"src/psg.asm"
+	include	"src/pcm.asm"
+
+	popo
