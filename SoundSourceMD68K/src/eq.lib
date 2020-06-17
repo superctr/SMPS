@@ -1,0 +1,347 @@
+;=======================================================;
+;			$$$EQ.LIB  (Sound Assign Library)			;
+;						ORG. MDEQ11.LIB					;
+;				'Sound-Source'							;
+;				 for Mega Drive (68K)					;
+;						Ver  1.1 / 1990.9.1				;
+;									  By  H.Kubota		;
+;=======================================================;
+;=======================================;
+;				 ON/OFF					;
+;=======================================;
+on				EQU		1
+ON				EQU		1
+off				EQU		0
+OFF				EQU		0
+
+;=======================================;
+;			  MACRO SWITCH				;
+;=======================================;
+prg				EQU		off				; off=develop  on=for programer
+s14				EQU		off				; system14 mode
+
+;=======================================;
+;		   SOUND START ADDRESS			;
+;=======================================;
+sound_top		EQU		$20000			; adrtb address (sound top address)
+se_top			EQU		$28000			; develop ver use
+control_top		EQU		$2e000			; control top address
+voice_top		EQU		$30000			; voice top address
+
+;=======================================;
+;			 ADDRTB ASSIGN				;
+;=======================================;
+hd_prtb			EQU		0				; 
+hd_backtb		EQU		1				; 
+hd_bgmtb		EQU		2				; 
+hd_setb			EQU		3				; 
+hd_tvrtb		EQU		4				; 
+hd_envetb		EQU		5				; 
+hd_sound		EQU		7				; fix 7 (sound editor use)
+
+;=======================================;
+;			BACK S.E. USE NO.			;
+;=======================================;
+back_se			EQU		2				; BACK S.E USING
+
+;=======================================;
+;			   REQUEST NO.				;
+;=======================================;
+songstrt		EQU		$81				; song start no.
+songend			EQU		$8F				; song end no.
+sestrt			EQU		$A0				; s.e start no.
+seend			EQU		$AF				; s.e end no.
+bkstrt			EQU		$D0				; back s.e start no.
+vostrt			EQU		$D8				; voice start no.
+utlst			EQU		$E0				; utility start no.
+lstno			EQU		$E2				; last no.
+
+;=======================================;
+;			FAID OUT COUNTER			;
+;=======================================;
+fout_ct0		EQU		$03				; faid out counter 0
+fout_ct1		EQU		$28				; faid out counter 1(INTRUPPET SUU)
+
+;=======================================;
+;			USE CHANNEL TOTAL			;
+;=======================================;
+fm_no			EQU		6
+pcm_no			EQU		1
+psg_no			EQU		3
+song_no			EQU		10
+fm_se_no		EQU		3
+psg_se_no		EQU		3
+se_no			EQU		fm_se_no+psg_se_no
+chian_no		EQU		fm_no+pcm_no+psg_no+se_no+2		; 2:back_se
+voice_vol		EQU		25				; FM voice table volm
+
+;=======================================;
+;			Z80 SRAM (PCM)				;
+;=======================================;
+z80kyflag		EQU		$A01FFF			; z80 key flag
+z80_flg			EQU		$A01FFD			; z80 opn using = 80h
+z80use_flg		EQU		$A01FF6			; z80 using flag
+z80tom_dl_str	EQU		$A00183			; mdDT.src tom delay address
+z80snr_dl_str	EQU		$A00227			; mdDT.src snare delay address
+
+;=======================================;
+;			   SOUND RAM				;
+;=======================================;
+;--------------< COMMON >---------------;
+sound_ram		EQU		$ffd300			; sound ram top address
+prfl			EQU		$00				; priority flag
+rcunt			EQU		$01				; delay count work
+cuntst			EQU		$02				; delay store
+t_flg			EQU		$03				; timing flag 
+foutfl			EQU		$04				; faid out flag (volume suu)
+fouttm_ct		EQU		$05				; faid out timer (work)
+fouttm			EQU		$06				; faid out timer (interrupt)
+pause_flg		EQU		$07				; pause flg (nz: pause on)(RAM+8)
+rythm_flag		EQU		$08				; rythm flag
+kyflag0			EQU		$09				; sound key flag
+kyflag			EQU		$0A				; key flag (buffer top)
+buf1			EQU		kyflag			; buffer 1
+buf2			EQU		kyflag+1		; buffer 2
+buf3			EQU		kyflag+2		; buffer 3
+seflag			EQU		$0E				; se flag
+se_mode_flg		EQU		$0F				; effect mode
+dt1				EQU		$10				; store slot 1 detune freq (2byte)
+dt2				EQU		$12				; store slot 2 detune freq (2byte)
+dt3				EQU		$14				; store slot 3 detune freq (2byte)
+dt4				EQU		$16				; store slot 4 detune freq (2byte)
+sng_voice_addr	EQU		$18				; song voice top address (long word)
+se_voice_addr	EQU		$1C				; se voice top address (long word)
+back_voice_addr	EQU		$20				; backse voice top address (long word)
+flags			EQU		$40
+
+;-----< CHANNEL WORK RAM (OFFSET) >-----;
+flgvol			EQU		$30				; channel work ram size
+
+tb20ch			EQU		$40				; FM 6ch (rythm)
+tb21ch			EQU		tb20ch+flgvol	; FM 0ch (tone)
+tb22ch			EQU		tb21ch+flgvol	; FM 1ch (tone)
+tb23ch			EQU		tb22ch+flgvol	; FM 2ch (tone)
+tb24ch			EQU		tb23ch+flgvol	; FM 4ch (tone)
+tb25ch			EQU		tb24ch+flgvol	; FM 5ch (tone)
+tb26ch			EQU		tb25ch+flgvol	; FM 6ch (tone)
+tb27ch			EQU		tb26ch+flgvol	; PSG 0ch
+tb28ch			EQU		tb27ch+flgvol	; PSG 1ch
+tb29ch			EQU		tb28ch+flgvol	; PSG 2ch (rythm)
+tb2Ach			EQU		tb29ch+flgvol	; FM S.E 2ch
+tb2Bch			EQU		tb2Ach+flgvol	; FM S.E 5ch
+tb2Cch			EQU		tb2Bch+flgvol	; FM S.E 6ch
+tb2Dch			EQU		tb2Cch+flgvol	; PSG S.E 1ch
+tb2Ech			EQU		tb2Dch+flgvol	; PSG S.E 2ch
+tb2Fch			EQU		tb2Ech+flgvol	; PSG S.E 3ch
+tb30ch			EQU		tb2Fch+flgvol	; back S.E 1ch
+tb31ch			EQU		tb30ch+flgvol	; back S.E 2ch
+
+;-------< WORK RAM DIRECT ASSIGN >------;
+wk_top			EQU		tb20ch
+pcm_rythm_wk	EQU		tb20ch
+fm_wk_top		EQU		tb21ch
+fm0_wk			EQU		tb21ch
+fm1_wk			EQU		tb22ch
+fm2_wk			EQU		tb23ch
+fm4_wk			EQU		tb24ch
+fm5_wk			EQU		tb25ch
+fm6_wk			EQU		tb26ch
+psg_wk_top		EQU		tb27ch
+psg0_wk			EQU		tb27ch
+psg1_wk			EQU		tb28ch
+psg2_wk			EQU		tb29ch
+fm_se_wk_top	EQU		tb2Ach
+fm_se1_wk		EQU		tb2Ach
+fm_se2_wk		EQU		tb2Bch
+fm_se3_wk		EQU		tb2Cch
+psg_se_wk_top	EQU		tb2Dch
+psg_se1_wk		EQU		tb2Dch
+psg_se2_wk		EQU		tb2Ech
+psg_se3_wk		EQU		tb2Fch
+back_se_wk		EQU		tb30ch
+back_se2_wk		EQU		tb31ch
+
+;=======================================;
+;				 FLAGS					;
+;=======================================;
+flag			EQU		$00				; flag
+_en				EQU		7				;  bit 7: enable
+_tie			EQU		4				;	   4: tie flag
+_fvr			EQU		3				;	   3: fvr flag
+_wr				EQU		2				;	   2: data write enable flag
+_null			EQU		1				;	   1: null (NL) flag
+_nl				EQU		1				;	   1: null (NL) flag
+_pse			EQU		0				;	   0: song pause flag
+
+chian			EQU		$01				; channel no.
+cbase			EQU		$02				; constant base counter
+dtstr			EQU		$03				; DMY
+tbpon			EQU		$04				; music table pointer (4 bytes)
+bias			EQU		$08				; scale data bias
+volm			EQU		$09				; volume date
+panstr			EQU		$0A				; lrpan mode store
+enve			EQU		$0B				; FM: voice no./ PSG: envelope no.store
+econt			EQU		$0C				; envelope counter (PSG)
+stac			EQU		$0D				; [CMCALL] stack pointer
+lcont			EQU		$0E				; length data
+ecstr			EQU		$0F				; length counter
+freqb			EQU		$10				; base frequency (2 bytes)
+gate			EQU		$12				; gate counter
+gate_str		EQU		$13				; gate data
+fvr_str			EQU		$14				; [FVR] store address (4 bytes)
+v_delay			EQU		$18				; [FVR] delay
+v_cont			EQU		$19				; [FVR] counter
+v_add			EQU		$1A				; [FVR] add data
+v_limit			EQU		$1B				; [FVR] limit
+v_freq			EQU		$1C				; [FVR] frequency (2 bytes)
+fdt_freq		EQU		$1E				; [FDT] frequency
+pan_no			EQU		$1F				; pan mode stpre
+pan_tb			EQU		$20				; pan table no.
+pan_start		EQU		$21				; pan start point
+pan_limit		EQU		$22				; pan limit
+pan_leng		EQU		$23				; pan length
+pan_cont		EQU		$24				; pan count
+algo			EQU		$25				; FM algorythm
+ntype			EQU		$26				; noise type (E0h-E7h)
+;env_s			EQU		$27				; song no.store (other song enve use)
+reptr			EQU		$28				; repeat counter (4 bytes)
+
+
+;=======================================;
+;			ENVELOPE COMMAND			;
+;=======================================;
+TBREPT			EQU		$80				; table repeat sign
+TBSTAY			EQU		$81				; table staying sign
+TBEND			EQU		$83				; table end sign
+TBADD			EQU		$84				; after this command
+										; data=([table data]-0)*[add data]
+TBBAK			EQU		$85				; table pointer set next data
+
+;=======================================;
+;				HEADDER					;
+;=======================================;
+hd_voice		EQU		0
+hd_fmch_no		EQU		2
+hd_psgch_no		EQU		3
+hd_base			EQU		4
+hd_delay		EQU		5
+hd_fmdt_top		EQU		6
+
+hd_se_base		EQU		2				; s.e base
+hd_se_use		EQU		3				; s.e use total
+hd_sedt_top		EQU		4				; s.e table channel data start addr
+
+hd_sech_no		EQU		1				; offset from hd chiannel  top
+
+hd_psg_vol		EQU		6+6				; ram using
+hd_fm_vol		EQU		4+6				; ram using
+hd_sepg_vol		EQU		10
+hd_sefm_vol		EQU		12
+;=======================================;
+;			FM CHIP REGISTOR			;
+;=======================================;
+dsel			EQU		$2B				;
+dreg			EQU		$2A				;
+fmtest			EQU		$21				; lsi test data
+lfo_fq			EQU		$22				;
+timer_a			EQU		$24				; timer A msb 8 bit data
+										; 25H = lsb 2 bit data
+timer_b			EQU		$26				; timer B data
+mode_tim		EQU		$27				; TIMER & FM MODE CONTROL
+key_cont		EQU		$28				; KEY ON OFF CONTROL
+dt_mult			EQU		$30				; detune/multiple data
+t_lvl			EQU		$40				; total level data
+ks_at_rt		EQU		$50				; key scale/attack rate data
+dec_rt			EQU		$60				; decay rate data
+sus_rt			EQU		$70				; sustain rate data
+sus_lv_rl_rt	EQU		$80				; sustain level/release rate data
+f_num1			EQU		$A0				; frequency number 1
+blk_f_num2		EQU		$A4				; frequency number 2 & block data
+f_num3ch		EQU		$A8				; 3ch slot F-number 1
+bl_fnum3ch		EQU		$AC				; 3ch slot F-number 2 & block data
+fb_con			EQU		$B0				; self feedback/connection
+lr_mod			EQU		$B4
+
+FMNON			EQU		$04
+PGNON			EQU		$80
+
+se_mode			EQU		$40
+nomal_mode		EQU		0
+
+;---------------< SLOT >----------------;
+FBC				EQU		$B0				; self feedback/connection
+RL				EQU		$B4
+
+MU1				EQU		$30
+MU2				EQU		$38
+MU3				EQU		$34
+MU4				EQU		$3C
+DM1				EQU		$30
+DM2				EQU		$38
+DM3				EQU		$34
+DM4				EQU		$3C
+TL1				EQU		$40
+TL2				EQU		$48
+TL3				EQU		$44
+TL4				EQU		$4C
+AR1				EQU		$50
+AR2				EQU		$58
+AR3				EQU		$54
+AR4				EQU		$5C
+DR1				EQU		$60
+DR2				EQU		$68
+DR3				EQU		$64
+DR4				EQU		$6C
+SR1				EQU		$70
+SR2				EQU		$78
+SR3				EQU		$74
+SR4				EQU		$7C
+RR1				EQU		$80
+RR2				EQU		$88
+RR3				EQU		$84
+RR4				EQU		$8C
+SSG1			EQU		$90
+SSG2			EQU		$98
+SSG3			EQU		$94
+SSG4			EQU		$9C
+bfsl1			EQU		$AD				; 3ch 1slot F-number 2 & block data
+bfsl2			EQU		$AE				; 3ch 2slot F-number 2 & block data
+bfsl3			EQU		$AC				; 3ch 3slot F-number 2 & block data
+bfsl4			EQU		$A6				; 3ch 3slot F-number 2 & block data		
+;=======================================;
+;			  FM CHIP I/O				;
+;=======================================;
+		if		~s14
+opn1			EQU		$a04000
+opn2			EQU		opn1+$02
+
+opn_status		EQU		opn1+$00		; 2612 status
+opn1_adr		EQU		opn1+$00		; 2612 OPN1 address
+opn1_data		EQU		opn1+$01		; 2612 OPN1 data
+
+opn2_adr		EQU		opn2+$00		; 2612 ADDRESS
+opn2_data		EQU		opn2+$01		; 2612 data
+
+psg68k			EQU		$C00011			; PSG address
+
+z80busreq		EQU		$a11100			; z80 bus rEQUest
+z80reset		EQU		$a11200			; z80 reset
+
+		else
+
+opn1			EQU		$840101
+opn1_adr		EQU		opn1+$00		; 2203 ADDRESS
+opn1_data		EQU		opn1+$02		; 2203 data
+opnstatus		EQU		opn1+$00		; 2203 status
+
+opn2			EQU		opn1+$04
+opn2_adr		EQU		opn2+$00		; 2203 ADDRESS
+opn2_data		EQU		opn2+$02		; 2203 data
+
+		endif
+
+;=======================================;
+;			  END OF FILE				;
+;=======================================;
+
+; vim: set ft=asm68k sw=4 ts=4 noet:
