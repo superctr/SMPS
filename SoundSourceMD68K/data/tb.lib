@@ -1,0 +1,425 @@
+;=======================================================;
+;           $$$TB.LIB  (Sound Table Assign Library)     ;
+;                       ORG. MDTB11.LIB                 ;
+;               'Sound-Source'                          ;
+;                for Mega Drive (68K)                   ;
+;                       Ver  1.1 / 1990.9.1             ;
+;                                     By  H.Kubota      ;
+;=======================================================;
+
+;=======================================;
+;            STANDARD VOLUME            ;
+;=======================================;
+FV_DR           EQU     $10
+FV_ML           EQU     $10
+FV_BS           EQU     $10
+FV_BK1          EQU     $10
+FV_BK2          EQU     $10
+FV_BK3          EQU     $10
+FV_BK4          EQU     $10
+PV_ML           EQU     $08
+PV_BS           EQU     $08
+PV_BK           EQU     $08
+
+;=======================================;
+;                 DRUM                  ;
+;=======================================;
+B               EQU     $81             ; bass drum
+S               EQU     $82             ; snare
+S2              EQU     $83             ; handclap
+O               EQU     $84             ; close hihat
+TT              EQU     $85             ; tom
+
+HT              EQU     $88             ; high tom 2
+HT2             EQU     $89             ; high tom
+MT              EQU     $8A             ; middle tom
+MT2             EQU     $8B             ; middle tom2
+MT3             EQU     $8C             ; middle tom2
+LT              EQU     $8D             ; low tom
+LT2             EQU     $8E             ; low tom2
+LT3             EQU     $8F             ; low tom2
+
+SNR2            EQU     $90             ; snare2
+SNR_B           EQU     $91             ; snare (scale back)
+
+;=======================================;
+;               PRIORITY                ;
+;=======================================;
+PR81            EQU     $80
+PR82            EQU     $80
+PR83            EQU     $80
+PR84            EQU     $80
+PR85            EQU     $80
+PR86            EQU     $80
+PR87            EQU     $80
+PR88            EQU     $80
+PR89            EQU     $80
+PR8A            EQU     $80
+PR8B            EQU     $80
+PR8C            EQU     $80
+PR8D            EQU     $80
+PR8E            EQU     $80
+PR8F            EQU     $80
+
+PR90            EQU     $80
+PR91            EQU     $80
+PR92            EQU     $80
+PR93            EQU     $80
+PR94            EQU     $80
+PR95            EQU     $80
+PR96            EQU     $80
+PR97            EQU     $80
+PR98            EQU     $80
+PR99            EQU     $80
+PR9A            EQU     $80
+PR9B            EQU     $80
+PR9C            EQU     $80
+PR9D            EQU     $80
+PR9E            EQU     $80
+PR9F            EQU     $80
+
+;---------------< S.E. >----------------;
+
+PRA0            EQU     $10
+PRA1            EQU     $10
+PRA2            EQU     $7F
+PRA3            EQU     $6F
+PRA4            EQU     $7F
+PRA5            EQU     $5F
+PRA6            EQU     $7F
+PRA7            EQU     $7F
+PRA8            EQU     $7F
+PRA9            EQU     $5F
+PRAA            EQU     $4F
+PRAB            EQU     $4F
+PRAC            EQU     $7F
+PRAD            EQU     $7F
+PRAE            EQU     $70
+PRAF            EQU     $6F
+
+PRB0            EQU     $7F
+PRB1            EQU     $7F
+PRB2            EQU     $7F
+PRB3            EQU     $7F
+PRB4            EQU     $7F
+PRB5            EQU     $7F
+PRB6            EQU     $7F
+PRB7            EQU     $7F
+PRB8            EQU     $7F
+PRB9            EQU     $7F
+PRBA            EQU     $7F
+PRBB            EQU     $7F
+PRBC            EQU     $7F
+PRBD            EQU     $7F
+PRBE            EQU     $7F
+PRBF            EQU     $7F
+
+PRC0            EQU     $7F
+PRC1            EQU     $7F
+PRC2            EQU     $7F
+PRC3            EQU     $7F
+PRC4            EQU     $7F
+PRC5            EQU     $7F
+PRC6            EQU     $7F
+PRC7            EQU     $7F
+PRC8            EQU     $7F
+PRC9            EQU     $7F
+PRCA            EQU     $7F
+PRCB            EQU     $7F
+PRCC            EQU     $7F
+PRCD            EQU     $7F
+PRCE            EQU     $7F
+PRCF            EQU     $7F
+
+PRD0            EQU     $80
+PRD1            EQU     $80
+PRD2            EQU     $80
+PRD3            EQU     $80
+PRD4            EQU     $80
+PRD5            EQU     $80
+PRD6            EQU     $80
+PRD7            EQU     $80
+PRD8            EQU     $80
+PRD9            EQU     $80
+PRDA            EQU     $80
+PRDB            EQU     $80
+PRDC            EQU     $80
+PRDD            EQU     $80
+PRDE            EQU     $80
+PRDF            EQU     $80
+
+PRE0            EQU     $80
+PRE1            EQU     $80
+PRE2            EQU     $80
+PRE3            EQU     $80
+PRE4            EQU     $80
+PRE5            EQU     $80
+PRE6            EQU     $80
+PRE7            EQU     $80
+PRE8            EQU     $80
+PRE9            EQU     $80
+PREA            EQU     $80
+PREB            EQU     $80
+PREC            EQU     $80
+PRED            EQU     $80
+PREE            EQU     $80
+PREF            EQU     $80
+
+;=======================================;
+;                COMMAND                ;
+;=======================================;
+
+
+LRPAN           EQU     $E0             ; FM left/right set
+FDT             EQU     $E1             ; FM frequency detune (don't s.e. mode)
+SET_TFLG        EQU     $E2             ; timing flag set
+CMTREND         EQU     $E3             ; total level,release off & end
+AUTOPAN         EQU     $E4             ; autopan set
+PFVADD          EQU     $E5             ; PSG & FM volume add
+CMVADD          EQU     $E6             ; FM (only) volume add
+CMTAB           EQU     $E7             ; don't key off
+TIE             EQU     CMTAB           ; tie (if length over L1+L1)(= CMTAB)
+SRE             EQU     CMTAB           ; sre (= CMTAB)
+CMGATE          EQU     $E8             ; gate time set
+LFO             EQU     $E9             ; LFO set
+TEMPO_CHG       EQU     $EA             ; tempo change (delay counter add)
+KEYSET          EQU     $EB             ; key no. set
+PVADD           EQU     $EC             ; PSG (only) volume add
+REGSET          EQU     $ED             ; chip direct write (channel look)
+FMWRITE         EQU     $EE             ; chip direct write (channel not look)
+FEV             EQU     $EF             ; FM voice no. set
+FVR             EQU     $F0             ; FM auto vibrate set
+VRON            EQU     $F1             ; FVR on (before FVR parameter set)
+CMEND           EQU     $F2             ; music table end
+CMNOIS          EQU     $F3             ; PSG noise mode set
+VROFF           EQU     $F4             ; FVR stop
+EV              EQU     $F5             ; PSG envelope no. set
+CMJUMP          EQU     $F6             ; table jump
+CMREPT          EQU     $F7             ; repeat set
+CMCALL          EQU     $F8             ; subroutin call
+CMRET           EQU     $F9             ; subroutin return
+CMBASE          EQU     $FA             ; tempo base set
+CMBIAS          EQU     $FB             ; bias set (transpose)
+SNG_BASE        EQU     $FC             ; song base set (all channel base set)
+TVR             EQU     $FD             ; table FVR
+DT              EQU     $FE             ; FM s.e mode
+EXCOM           EQU     $FF             ; extend command
+S_PSE           EQU     0               ; song pause (song only)
+SSG             EQU     1               ; SSG set
+
+;-------------< PAN MODE >--------------;
+LSET            EQU     $80             ; LRPAN left set
+RSET            EQU     $40             ; LRPAN right set
+LRSET           EQU     $C0             ; LRPAN left & right set
+
+;------------< NOISE MODE >-------------;
+NOIS0           EQU     $E0             ; PSG noise mode 0 set
+NOIS1           EQU     $E1             ; PSG noise mode 1 set
+NOIS2           EQU     $E2             ; PSG noise mode 2 set
+NOIS3           EQU     $E3             ; PSG noise mode 3 set
+NOIS4           EQU     $E4             ; PSG noise mode 4 set
+NOIS5           EQU     $E5             ; PSG noise mode 5 set
+NOIS6           EQU     $E6             ; PSG noise mode 6 set
+NOIS7           EQU     $E7             ; PSG noise mode 7 set
+
+;=======================================;
+;                LENGTH                 ;
+;=======================================;
+L32_3           SET     1               ; 1
+L16_3           SET     2               ; 2
+L16             SET     3               ; 3
+L8_3            SET     L16_3*2         ; 4
+L8              SET     L16*2           ; 6
+L4_3            SET     L8_3*2          ; 8
+LF8             SET     L16*3           ; 9
+L4              SET     L8*2            ; 12
+LF4             SET     L8*3            ; 18
+L2              SET     L4*2            ; 24
+LF2             SET     L4*3            ; 36
+L1              SET     L2*2            ; 48
+
+L83             SET     8               ; 8
+L163            SET     4               ; 4
+
+;=======================================;
+;                SCALE                  ;
+;=======================================;
+NL              EQU     80H
+CN0             EQU     $81
+CS0             EQU     $82
+DF0             EQU     $82
+DN0             EQU     $83
+DS0             EQU     $84
+EF0             EQU     $84
+EN0             EQU     $85
+ES0             EQU     $86
+FF0             EQU     $85
+FN0             EQU     $86
+FS0             EQU     $87
+GF0             EQU     $87
+GN0             EQU     $88
+GS0             EQU     $89
+AF0             EQU     $89
+AN0             EQU     $8A
+AS0             EQU     $8B
+BF0             EQU     $8B
+BN0             EQU     $8C
+BS0             EQU     $8D
+CF1             EQU     $8C
+CN1             EQU     CN0+12          ; $80
+CS1             EQU     CS0+12
+DF1             EQU     DF0+12
+DN1             EQU     DN0+12
+DS1             EQU     DS0+12
+EF1             EQU     EF0+12
+EN1             EQU     EN0+12          ; $91
+ES1             EQU     ES0+12
+FF1             EQU     FF0+12
+FN1             EQU     FN0+12
+FS1             EQU     FS0+12
+GF1             EQU     GF0+12
+GN1             EQU     GN0+12          ; $94
+GS1             EQU     GS0+12
+AF1             EQU     AF0+12
+AN1             EQU     AN0+12
+AS1             EQU     AS0+12
+BF1             EQU     BF0+12
+BN1             EQU     BN0+12
+BS1             EQU     BS0+12
+CF2             EQU     CF1+12
+CN2             EQU     CN1+12          ; $99
+CS2             EQU     CS1+12
+DF2             EQU     DF1+12
+DN2             EQU     DN1+12
+DS2             EQU     DS1+12
+EF2             EQU     EF1+12
+EN2             EQU     EN1+12          ; $9D
+ES2             EQU     ES1+12
+FF2             EQU     FF1+12
+FN2             EQU     FN1+12
+FS2             EQU     FS1+12
+GF2             EQU     GF1+12
+GN2             EQU     GN1+12          ; $A0
+GS2             EQU     GS1+12
+AF2             EQU     AF1+12
+AN2             EQU     AN1+12
+AS2             EQU     AS1+12
+BF2             EQU     BF1+12
+BN2             EQU     BN1+12
+BS2             EQU     BS1+12
+
+CF3             EQU     CF2+12
+CN3             EQU     CN2+12          ; $A5
+CS3             EQU     CS2+12
+DF3             EQU     DF2+12
+DN3             EQU     DN2+12
+DS3             EQU     DS2+12
+EF3             EQU     EF2+12
+EN3             EQU     EN2+12          ; $A9
+ES3             EQU     ES2+12
+FF3             EQU     FF2+12
+FN3             EQU     FN2+12
+FS3             EQU     FS2+12
+GF3             EQU     GF2+12
+GN3             EQU     GN2+12          ; $AC
+GS3             EQU     GS2+12
+AF3             EQU     AF2+12
+AN3             EQU     AN2+12
+AS3             EQU     AS2+12
+BF3             EQU     BF2+12
+BN3             EQU     BN2+12
+BS3             EQU     BS2+12
+
+CF4             EQU     CF3+12
+CN4             EQU     CN3+12          ; $B1
+CS4             EQU     CS3+12
+DF4             EQU     DF3+12
+DN4             EQU     DN3+12
+DS4             EQU     DS3+12
+EF4             EQU     EF3+12
+EN4             EQU     EN3+12          ; $B5
+ES4             EQU     ES3+12
+FF4             EQU     FF3+12
+FN4             EQU     FN3+12
+FS4             EQU     FS3+12
+GF4             EQU     GF3+12
+GN4             EQU     GN3+12          ; $B8
+GS4             EQU     GS3+12
+AF4             EQU     AF3+12
+AN4             EQU     AN3+12
+AS4             EQU     AS3+12
+BF4             EQU     BF3+12
+BN4             EQU     BN3+12
+BS4             EQU     BS3+12
+
+CF5             EQU     CF4+12
+CN5             EQU     CN4+12          ; $BD
+CS5             EQU     CS4+12
+DF5             EQU     DF4+12
+DN5             EQU     DN4+12
+DS5             EQU     DS4+12
+EF5             EQU     EF4+12
+EN5             EQU     EN4+12          ; $C1
+ES5             EQU     ES4+12
+FF5             EQU     FF4+12
+FN5             EQU     FN4+12
+FS5             EQU     FS4+12
+GF5             EQU     GF4+12
+GN5             EQU     GN4+12          ; $C4
+GS5             EQU     GS4+12
+AF5             EQU     AF4+12
+AN5             EQU     AN4+12
+AS5             EQU     AS4+12
+BF5             EQU     BF4+12
+BN5             EQU     BN4+12
+BS5             EQU     BS4+12
+
+CF6             EQU     CF5+12
+CN6             EQU     CN5+12
+CS6             EQU     CS5+12
+DF6             EQU     DF5+12
+DN6             EQU     DN5+12
+DS6             EQU     DS5+12
+EF6             EQU     EF5+12
+EN6             EQU     EN5+12
+ES6             EQU     ES5+12
+FF6             EQU     FF5+12
+FN6             EQU     FN5+12
+FS6             EQU     FS5+12
+GF6             EQU     GF5+12
+GN6             EQU     GN5+12
+GS6             EQU     GS5+12
+AF6             EQU     AF5+12
+AN6             EQU     AN5+12
+AS6             EQU     AS5+12
+BF6             EQU     BF5+12
+BN6             EQU     BN5+12
+BS6             EQU     BS5+12
+
+CF7             EQU     CF6+12
+CN7             EQU     CN6+12
+CS7             EQU     CS6+12
+DF7             EQU     DF6+12
+DN7             EQU     DN6+12
+DS7             EQU     DS6+12
+EF7             EQU     EF6+12
+EN7             EQU     EN6+12
+ES7             EQU     ES6+12
+FF7             EQU     FF6+12
+FN7             EQU     FN6+12
+FS7             EQU     FS6+12
+GF7             EQU     GF6+12
+GN7             EQU     GN6+12
+GS7             EQU     GS6+12
+AF7             EQU     AF6+12
+AN7             EQU     AN6+12
+AS7             EQU     AS6+12
+BF7             EQU     BF6+12
+BN7             EQU     BN6+12
+BS7             EQU     BS6+12
+
+;=======================================;
+;             END OF FILE               ;
+;=======================================;
+
+; vim: set ft=asm68k sw=4 ts=4 noet:

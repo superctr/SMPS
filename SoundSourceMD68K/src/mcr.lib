@@ -11,18 +11,16 @@
 ;				  TDW					;
 ;=======================================;
 TDW		macro	x1,x2			;　相対アドレスの算出
-adrt	set		\x1-\x2
-		dc.b	(adrt>>8)
-		dc.b	(adrt&$ff)
+		dc.b	(((\x1-\x2)&$ff00)>>8)
+		dc.b	((\x1-\x2)&$ff)
 		endm
 
 ;=======================================;
 ;				  JDW					;
 ;=======================================;
 JDW		macro	addr
-adrj	set		\addr-*-1
-		dc.b	(adrj>>8)
-		dc.b	(adrj&$ff)
+		dc.b	(((\addr-*-1)&$ff00)>>8)
+		dc.b	((\addr-*)&$ff)
 		endm
 
 ;=======================================;
@@ -54,56 +52,56 @@ z80bus_off		macro
 ;----------------< CNF >----------------;
 CNF		MACRO	ALG,FBK
 cnect	set		\ALG
-		DB		\ALG+\FBK*8
+		DC.B	\ALG+\FBK*8
 		ENDM
 ;----------------< MD >-----------------;
 MD		MACRO	M1,D1,M2,D2,M3,D3,M4,D4
-		DB		\D1*10H+\M1,\D2*10H+\M2
-		DB		\D3*10H+\M3,\D4*10H+\M4
+		DC.B	\D1*10H+\M1,\D2*10H+\M2
+		DC.B	\D3*10H+\M3,\D4*10H+\M4
 		ENDM
 ;----------------< TL >-----------------;
 TL		MACRO	T1,T2,T3,T4
-		if		cnect==0
-		db		\T1,\T2,\T3,\T4|80h
+		if		cnect=0
+		dc.b	\T1,\T2,\T3,\T4|80h
 		endif
-		if		cnect==1
-		db		\T1,\T2,\T3,\T4|80h
+		if		cnect=1
+		dc.b	\T1,\T2,\T3,\T4|80h
 		endif
-		if		cnect==2
-		db		\T1,\T2,\T3,\T4|80h
+		if		cnect=2
+		dc.b	\T1,\T2,\T3,\T4|80h
 		endif
-		if		cnect==3
-		db		\T1,\T2,\T3,\T4|80h
+		if		cnect=3
+		dc.b	\T1,\T2,\T3,\T4|80h
 		endif
-		if		cnect==4
-		db		\T1,\T2|80h,\T3,\T4|80h
+		if		cnect=4
+		dc.b	\T1,\T2|80h,\T3,\T4|80h
 		endif
-		if		cnect==5
-		db		\T1,\T2|80h,\T3|80h,\T4|80h
+		if		cnect=5
+		dc.b	\T1,\T2|80h,\T3|80h,\T4|80h
 		endif
-		if		cnect==6
-		db		\T1,\T2|80h,\T3|80h,\T4|80h
+		if		cnect=6
+		dc.b	\T1,\T2|80h,\T3|80h,\T4|80h
 		endif
-		if		cnect==7
-		db		\T1|80h,\T2|80h,\T3|80h,\T4|80h
+		if		cnect=7
+		dc.b	\T1|80h,\T2|80h,\T3|80h,\T4|80h
 		endif
 		ENDM
 ;----------------< RSAR >---------------;
 RSAR	MACRO	K1,A1,K2,A2,K3,A3,K4,A4
-		DB		\K1*40H+\A1,\K2*40H+\A2,\K3*40H+\A3,\K4*40H+\A4
+		DC.B	\K1*40H+\A1,\K2*40H+\A2,\K3*40H+\A3,\K4*40H+\A4
 		ENDM
 ;----------------< D1R >----------------;
 D1R		MACRO	X1,X2,X3,X4
-		DB		\X1,\X2,\X3,\X4
+		DC.B	\X1,\X2,\X3,\X4
 		ENDM
 ;----------------< D2R >----------------;
 D2R		MACRO	X1,X2,X3,X4
-		DB		\X1,\X2,\X3,\X4
+		DC.B	\X1,\X2,\X3,\X4
 		ENDM
 ;----------------< RRL >----------------;
 RRL		MACRO	R1,DL1,R2,DL2,R3,DL3,R4,DL4
-		DB		\R1+\DL1*10H,\R2+\DL2*10H
-		DB		\R3+\DL3*10H,\R4+\DL4*10H
+		DC.B	\R1+\DL1*10H,\R2+\DL2*10H
+		DC.B	\R3+\DL3*10H,\R4+\DL4*10H
 		ENDM
 
 ;=======================================;

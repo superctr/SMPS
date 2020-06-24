@@ -23,10 +23,14 @@ s14				EQU		off				; system14 mode
 ;=======================================;
 ;		   SOUND START ADDRESS			;
 ;=======================================;
-sound_top		EQU		$20000			; adrtb address (sound top address)
-se_top			EQU		$28000			; develop ver use
-control_top		EQU		$2e000			; control top address
-voice_top		EQU		$30000			; voice top address
+;sound_top		EQU		$20000			; adrtb address (sound top address)
+;se_top			EQU		$28000			; develop ver use
+;control_top	EQU		$2e000			; control top address
+;voice_top		EQU		$30000			; voice top address
+
+; Modified by ctr to match position expected by ED11.
+sound_top		EQU		$0c000			; adrtb address (sound top address)
+voice_top		EQU		$20000			; voice top address
 
 ;=======================================;
 ;			 ADDRTB ASSIGN				;

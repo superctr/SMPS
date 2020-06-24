@@ -12,12 +12,12 @@
 ;		include mdMCR11.LIB
 ;		list on
 
-		if		def(prg)
+;		if		def(prg)
 ;		extern	bgmtb,setb,backtb
 ;		extern	envetb,pltb
-		else
-		org		control_top
-		endif
+;		else
+;		org		control_top
+;		endif
 
 ;		extern	command,vol_set,jfenv0	; $$$CMD.ASM
 ;		extern	psg_cnt,psg_att_set		; $$$PSG.ASM

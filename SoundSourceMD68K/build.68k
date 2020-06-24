@@ -1,12 +1,43 @@
 	pusho
 	opt		l?,an+
 
+	include "data/tb.lib"
 	include "src/eq.lib"
 	include "src/mcr.lib"
 
+; ED11.bin loads internal z80 driver + built in drums
+	org		0
+	incbin "data/editor/PatchedED11.bin"
+
+	org		sound_top
+
+	include "data/tb.asm"
+	include "data/sng81.s"
+	include "data/sng82.s"
+	include "data/sng83.s"
+	include "data/sng84.s"
+	include "data/sng85.s"
+	include "data/sng86.s"
+	include "data/sng87.s"
+	include "data/sng88.s"
+	include "data/sng89.s"
+	include "data/sng8a.s"
+	include "data/sng8b.s"
+	include "data/sng8c.s"
+	include "data/sng8d.s"
+	include "data/sng8e.s"
+	include "data/sng8f.s"
+	include "data/setb.asm"
+
+	include "data/se1.s"
+	include "data/se2.s"
+	include "data/se3.s"
+	include "data/bse.s"
+
+	even
 	include "src/cnt.asm"
 	include	"src/cmd.asm"
 	include	"src/psg.asm"
-	include	"src/pcm.asm"
+;	include	"src/pcm.asm"
 
 	popo

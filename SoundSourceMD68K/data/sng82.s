@@ -1,0 +1,692 @@
+;=======================================================;
+;			*$$SNG82.S	(Song Data)						;
+;						ORG. MDSNG112.S					;
+;				'Sound-Source'							;
+;				 for Mega Drive (68K)					;
+;						Ver  1.1 / 1990.9.1				;
+;									  By  H.Kubota		;
+;=======================================================;
+
+;		public	S82
+
+;		list off
+;		include	mdEQ11.LIB
+;		include	mdMCR11.LIB
+;		include	mdTB11.LIB
+;		list on
+
+		even
+
+;===============================================;
+;												;
+;					 ASSIGN						;
+;												;
+;===============================================;
+;=====< S82 CHANNEL TOTAL >=====;
+FM82	EQU		6				; FM Channel Total
+PSG82	EQU		3				; PSG Channel Total
+;=========< S82 TEMPO >=========;
+TP82	EQU		2				; Tempo
+DL82	EQU		15H				; Delay
+;==========< S82 BIAS >=========;
+FB820	EQU		0				; FM 0ch
+FB821	EQU		-12				; FM 1ch
+FB822	EQU		0				; FM 2ch
+FB824	EQU		0				; FM 4ch
+FB825	EQU		0				; FM 5ch
+FB826	EQU		0				; FM 6ch (if don't use PCM drum)
+PB828	EQU		-12*3			; PSG 80ch
+PB82A	EQU		-12*3			; PSG A0ch
+PB82C	EQU		0				; PSG C0ch
+;==========< S82 VOLM >=========;
+FA820	EQU		0AH				; FM 0ch
+FA821	EQU		06H				; FM 1ch
+FA822	EQU		16H				; FM 2ch
+FA824	EQU		16H				; FM 4ch
+FA825	EQU		16H				; FM 5ch
+FA826	EQU		10H				; FM 6ch (if don't use PCM drum)
+PA828	EQU		09H				; PSG 80ch
+PA82A	EQU		09H				; PSG A0ch
+PA82C	EQU		02H				; PSG C0ch
+;==========< S82 ENVE >=========;
+PE828	EQU		0				; PSG 80ch
+PE82A	EQU		0				; PSG A0ch
+PE82C	EQU		4				; PSG C0ch
+
+;===============================================;
+;												;
+;					 HEADER						;
+;												;
+;===============================================;
+S82:
+		TDW		TIMB82,S82				; Voice Top Address
+		DC.B	FM82,PSG82,TP82,DL82	; FM Total,PSG Total,Tempo,Delay
+
+		TDW		TAB82D,S82				; PCM Drum Table Pointer
+		DC.B	0,0						; Bias,Volm (Dummy)
+
+		TDW		TAB820,S82				; FM 0ch Table Pointer
+		DC.B	FB820,FA820				; Bias,Volm
+
+		TDW		TAB821,S82				; FM 1ch Table Pointer
+		DC.B	FB821,FA821				; Bias,Volm
+
+		TDW		TAB822,S82				; FM 2ch Table Pointer
+		DC.B	FB822,FA822				; Bias,Volm
+
+		TDW		TAB824,S82				; FM 4ch Table Pointer
+		DC.B	FB824,FA824				; Bias,Volm
+
+		TDW		TAB825,S82				; FM 5ch Table Pointer
+		DC.B	FB825,FA825				; Bias,Volm
+
+		TDW		TAB828,S82				; PSG 80ch Table Pointer
+		DC.B	PB828,PA828,0,PE828		; Bias,Volm,Dummy,Enve
+
+		TDW		TAB82A,S82				; PSG A0ch Table Pointer
+		DC.B	PB82A,PA82A,0,PE82A		; Bias,Volm,Dummy,Enve
+
+		TDW		TAB82C,S82				; PSG C0ch Table Pointer
+		DC.B	PB82C,PA82C,0,PE82C		; Bias,Volm,Dummy,Enve
+
+;===============================================;
+;												;
+;				   SONG TABLE					;
+;												;
+;===============================================;
+;===============================================;
+;					 FM 0ch						;
+;===============================================;
+TAB820	EQU		*
+		DC.B	FEV,0
+		DC.B	FVR,10,1,3,3
+T8200	EQU		*
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,L2
+
+		DC.B	FEV,5
+		DC.B	CMVADD,11
+		DC.B	LRPAN,LSET
+
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,L2
+
+		DC.B	NL,L8
+		DC.B	CMVADD,-3
+		DC.B	LRPAN,0C0H
+T820A	EQU		*
+		DC.B	VROFF
+		DC.B	FEV,6
+		DC.B	NL,L8,CMGATE,12,BF4,CMGATE,OFF,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,BF4
+		DC.B	DF5,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,NL,L8,BF4
+		
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,GF4
+		DC.B	AF4,GF4,FVR,1,1,5,0FFH,AN4,L8-1,TIE,VROFF,BF4,L8+1
+		DC.B	NL,L4+L8,BF4,L8
+		
+
+		DC.B	AF4,GF4,EF4,DF4
+		DC.B	EF4,L4,CMGATE,12,L8,CMGATE,OFF,L8
+		DC.B	FN4,EF4,DF4,BF3
+		DC.B	DF4,L4,CMGATE,22,EF4
+
+		DC.B	GF4,L8,EF4,NL,L4+L4
+
+		DC.B	EF4,L4
+
+		DC.B	FN4,L8,DF4,NL,L4+L2
+
+
+		DC.B	NL,L8,CMGATE,12,BF4,CMGATE,OFF,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,BF4
+		DC.B	DF5,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,NL,L8,BF4
+		
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,GF4
+		DC.B	AF4,GF4,FVR,1,1,5,0FFH,AN4,L8-1,TIE,VROFF,BF4,L8+1
+		DC.B	NL,L4+L8,BF4,L8
+		
+
+		DC.B	AF4,GF4,EF4,DF4
+		DC.B	EF4,L4,CMGATE,12,L8,CMGATE,OFF,L8
+		DC.B	FN4,EF4,DF4,BF3
+		DC.B	DF4,L4,CMGATE,22,EF4,CMGATE,OFF
+
+		DC.B	GF4,L8,EF4,NL,L4+L4
+		DC.B	BF4,L8,L8
+		DC.B	DF5,L8,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,CMGATE,24,AF4,CMGATE,OFF
+		
+;		PUBLIC	T820B
+T820B	EQU		*
+		DC.B	CMBIAS,-12
+		DC.B	FVR,13,1,8,4
+		DC.B	LRPAN,LSET
+		DC.B	BF5,L8,L8+L4,NL,L2
+		DC.B	BF5,L8,L8+L4,NL,L4+L8,LRPAN,LRSET,CMGATE,24,BF5,L4,CMGATE,OFF
+
+		DC.B	BF5,L8,L8,L8,DF6,L4,BF5,L8,DF6,L4
+		DC.B	BF5,L8,NL,L4+L4+L8,AF5,L4
+
+		DC.B	GF5,L8,AF5,L4,GF5,L8,AF5,NL,AF5,L4
+		DC.B	GF5,L8,AF5,L4,GF5,L8,NL,NL,AF5,L4
+
+		DC.B	GF5,L8,AF5,L4,GF5,L8,AF5,NL,AF5,L4
+		DC.B	GF5,L8,AF5,L4,GF5,L8,NL,VROFF,LRPAN,LSET,AF5,L4
+
+		DC.B	GF5,L8,EF5,NL,L4+L4,EF5,L4
+		DC.B	FN5,L8,DF5,NL,L4+L4,AF5,L4
+
+		DC.B	GF5,L8,EF5,NL,L4+L4,EF5,L4
+		DC.B	FN5,L8,DF5,NL,L4+L2
+		DC.B	CMBIAS,12
+		DC.B	LRPAN,LRSET
+
+		DC.B	CMJUMP
+		JDW		T820A
+
+SUB8200	EQU		*
+
+		DC.B	EF2,L4
+		DC.B	GF2,L8,BF2,GF3,EF3,LF4,2,CMTAB,FN3,L4-2
+		DC.B	EF3,L8,DF3,NL,DF3,NL,L4,EF2
+
+		DC.B	GF2,L8,BF2,GF3,EF3,LF4,2,CMTAB,FN3,L4-2
+		DC.B	EF3,L8,DF3
+		DC.B	CMRET
+
+;===============================================;
+;					 FM 1ch						;
+;===============================================;
+TAB821	EQU		*
+		DC.B	CMBIAS,12
+		DC.B	FEV,0
+		DC.B	FVR,20,1,2,1
+T8210	EQU		*
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,L2
+		DC.B	CMREPT,0,2
+		JDW		T8210
+		DC.B	NL,L8
+T821A	EQU		*
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,CF3,CF3,NL,CF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,CF3,CF3,NL,CF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L2
+T821B	EQU		*
+		DC.B	EF2,L4
+		DC.B	GF2,L8,BF2,GF3,EF3,LF4,2,CMTAB,FN3,L4-2
+		DC.B	EF3,L8,DF3,NL,DF3,NL,L4,EF2
+
+		DC.B	GF2,L8,BF2,GF3,EF3,LF4,2,CMTAB,FN3,L4-2
+		DC.B	EF3,L8,DF3,NL,L2
+		DC.B	CMREPT,0,3
+		JDW		T821B
+		DC.B	NL,L8
+
+		DC.B	CMJUMP
+		JDW		T821A
+
+;===============================================;
+;					 FM 2ch						;
+;===============================================;
+TAB822	EQU		*
+		DC.B	FEV,8
+		DC.B	FVR,10,1,3,3
+		DC.B	LRPAN,RSET
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,LF4
+		DC.B	CMVADD,2
+T8220	EQU		*
+		DC.B	LRPAN,RSET
+		DC.B	CMBIAS,12
+		DC.B	FVR,5,1,2,8
+		DC.B	FEV,3
+		DC.B	CMGATE,1,CMVADD,1
+		DC.B	EF3,3,3,3,3
+
+		DC.B	3,3,CMGATE,2,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	EF3,L8,CMGATE,1,CMVADD,6,EF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	EF3,L8,BF2,L8+L8,CMGATE,1,CMVADD,6,BF2,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	DF3,L8,CMGATE,1,CMVADD,6,DF3,3,3,CMGATE,OFF,CMVADD,-6,DF3,L8
+		DC.B	FVR,1DH,1,0FCH,20H,AF2,L8+L2,VROFF
+		
+		DC.B	NL,L8,CMGATE,1,CMVADD,6,EF3,L16,L16,CMGATE,OFF,CMVADD,-6
+		DC.B	EF3,L8,CMGATE,1,CMVADD,6,EF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	EF3,L8,BF2,L8+L8,CMGATE,1,CMVADD,6,BF2,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	DF3,L8,CMGATE,1,CMVADD,6,DF3,3,3,CMGATE,OFF,CMVADD,-6,DF3,L8
+		DC.B	FVR,2CH,1,0FCH,0FFH,AF2,L8+L2,VROFF
+		
+		DC.B	CMVADD,-4
+		DC.B	CMBIAS,-12
+		
+T822A	EQU		*
+		DC.B	LRPAN,RSET
+		DC.B	CMVADD,5
+		DC.B	FEV,1
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,CF3,CF3,NL,CF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,CF3,CF3,NL,CF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	NL,L8,EF3,EF3,NL,EF3,NL,L4,DF3,L8
+		DC.B	DF3,L8,NL,DF3,NL,L8+L2
+
+		DC.B	CMVADD,-5
+		DC.B	LRPAN,LSET
+T822B	EQU		*
+		DC.B	FEV,6
+		DC.B	CMBIAS,-12
+		DC.B	FVR,13,1,8,4
+		DC.B	CMVADD,9
+		DC.B	NL,L2,GF5,L8,L8+L4
+		DC.B	NL,L2,FN5,L8,L4,CMGATE,24,GF5,CMGATE,OFF
+
+		DC.B	GF5,L8,L8,L8,BF5,L4,GF5,L8,BF5,L4
+		DC.B	FN5,L8,NL,L4+L4+L8,FN5,L4
+
+		DC.B	EF5,L8,FN5,L4,EF5,L8,FN5,NL,FN5,L4
+		DC.B	EF5,L8,FN5,L4,DF5,L8,NL,NL,FN5,L4
+
+		DC.B	EF5,L8,FN5,L4,EF5,L8,FN5,NL,FN5,L4
+		DC.B	EF5,L8,FN5,L4,DF5,L8,NL,LF4,VROFF
+
+		DC.B	NL,L2,GF5,L8,EF5,NL,L4
+		DC.B	NL,L4,AF5,L8,FN5,NL,L2
+
+		DC.B	NL,L2,GF5,L8,EF5,NL,L4
+		DC.B	NL,L4,AF5,L8,FN5,NL,L2
+
+		DC.B	CMVADD,-9
+		DC.B	CMBIAS,12
+		DC.B	CMJUMP
+		JDW		T822A
+
+;===============================================;
+;					 FM 4ch						;
+;===============================================;
+TAB824	EQU		*
+		DC.B	FEV,7
+		DC.B	FVR,10,1,3,3
+		DC.B	LRPAN,LSET
+
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,LF4
+
+		DC.B	CMVADD,5
+
+		DC.B	FVR,5,1,1,3
+T8240	EQU		*
+		DC.B	CMVADD,-2
+		DC.B	CMBIAS,12
+		DC.B	LRPAN,LSET
+		
+		DC.B	FVR,5,1,2,8
+		DC.B	FEV,3
+		DC.B	CMGATE,1
+		DC.B	GF3,3,3,3,3
+
+		DC.B	3,3,CMGATE,2,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	GF3,L8,CMGATE,1,CMVADD,6,GF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	GF3,L8,EF3,L8+L8,CMGATE,1,CMVADD,6,EF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	FN3,L8,CMGATE,1,CMVADD,6,FN3,3,3,CMGATE,OFF,CMVADD,-6,FN3,L8
+		DC.B	FVR,1DH,1,0FCH,20H,DF3,L8+L2,VROFF
+		
+		DC.B	NL,L8,CMGATE,1,CMVADD,6,GF3,L16,L16,CMGATE,OFF,CMVADD,-6
+		DC.B	GF3,L8,CMGATE,1,CMVADD,6,GF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	GF3,L8,EF3,L8+L8,CMGATE,1,CMVADD,6,EF3,3,3,CMGATE,OFF,CMVADD,-6
+		DC.B	FN3,L8,CMGATE,1,CMVADD,6,FN3,3,3,CMGATE,OFF,CMVADD,-6,FN3,L8
+		DC.B	FVR,2CH,1,0FCH,0FFH,DF3,L8+L2,VROFF
+		
+		DC.B	CMVADD,8
+		DC.B	CMBIAS,-12
+
+
+T824A	EQU		*
+		DC.B	LRPAN,LSET
+		DC.B	CMVADD,-7
+		DC.B	FEV,1
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,GF3,GF3,NL,GF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,GF3,GF3,NL,GF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2
+
+		DC.B	NL,L8,BF3,BF3,NL,BF3,NL,L4,AF3,L8
+		DC.B	AF3,L8,NL,AF3,NL,L8+L2-L8
+		DC.B	CMVADD,3
+		DC.B	LRPAN,LRSET
+T824B	EQU		*
+		DC.B	FEV,5
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,L2
+
+		DC.B	CMREPT,0,3
+		JDW		T824B
+		DC.B	CMVADD,4
+
+		DC.B	NL,L8
+		DC.B	CMJUMP
+		JDW		T824A
+
+;===============================================;
+;					 FM 5ch						;
+;===============================================;
+TAB825	EQU		*
+		DC.B	FEV,9
+		DC.B	FVR,5,1,1,3
+T8250	EQU		*
+		DC.B	FDT,2
+		DC.B	CMCALL
+		JDW		SUB8200
+		DC.B	NL,L2
+
+		DC.B	CMREPT,0,2
+		JDW		T8250
+
+		DC.B	FEV,6
+		DC.B	NL,L4
+T825A	EQU		*
+		DC.B	VROFF
+		DC.B	LRPAN,LRSET
+
+		DC.B	CMVADD,16
+
+		DC.B	FDT,3
+		DC.B	NL,L8,CMGATE,12,BF4,CMGATE,OFF,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,BF4
+		DC.B	DF5,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,NL,L8,BF4
+		
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,GF4
+		DC.B	AF4,GF4,FVR,1,1,5,0FFH,AN4,L8-1,TIE,VROFF,BF4,L8+1
+		DC.B	NL,L4+L8,BF4,L8
+		
+
+		DC.B	AF4,GF4,EF4,DF4
+		DC.B	EF4,L4,CMGATE,12,L8,CMGATE,OFF,L8
+		DC.B	FN4,EF4,DF4,BF3
+		DC.B	DF4,L4,CMGATE,22,EF4
+
+		DC.B	GF4,L8,EF4,NL,L4+L4
+
+		DC.B	EF4,L4
+
+		DC.B	FN4,L8,DF4,NL,L4+L2
+
+
+		DC.B	NL,L8,CMGATE,12,BF4,CMGATE,OFF,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,BF4
+		DC.B	DF5,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,NL,L8,BF4
+		
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,BF4,BF4
+		DC.B	CMGATE,12,BF4,CMGATE,OFF,BF4,AF4,GF4
+		DC.B	AF4,GF4,FVR,1,1,5,0FFH,AN4,L8-1,TIE,VROFF,BF4,L8+1
+		DC.B	NL,L4+L8,BF4,L8
+		
+
+		DC.B	AF4,GF4,EF4,DF4
+		DC.B	EF4,L4,CMGATE,12,L8,CMGATE,OFF,L8
+		DC.B	FN4,EF4,DF4,BF3
+		DC.B	DF4,L4,CMGATE,22,EF4,CMGATE,OFF
+
+		DC.B	GF4,L8,EF4,NL,L4+L4
+		DC.B	BF4,L8,L8
+		DC.B	DF5,L8,BF4,CMGATE,24,AF4,L4,CMGATE,OFF
+		DC.B	BF4,AF4,L4-L8
+
+		DC.B	CMVADD,-16
+
+T825B	EQU		*
+		DC.B	FEV,6
+		DC.B	CMBIAS,-12
+		DC.B	FVR,13,1,8,4
+		DC.B	LRPAN,RSET
+		DC.B	CMVADD,-3
+		DC.B	BF5,L8,L8+L4,NL,L2
+		DC.B	BF5,L8,L8+L4,NL,L4+L8,CMVADD,3,CMGATE,24,EF5,L4,CMGATE,OFF
+
+		DC.B	EF5,L8,L8,L8,GF5,L4,EF5,L8,FN5,L4
+		DC.B	DF5,L8,NL,L4+L4+L8,DF5,L4
+
+		DC.B	BF4,L8,BF4,L4,BF4,L8,BF4,NL,DF5,L4
+		DC.B	BF4,L8,BF4,L4,BF4,L8,NL,NL,DF5,L4
+
+		DC.B	BF4,L8,BF4,L4,BF4,L8,BF4,NL,DF5,L4
+		DC.B	BF4,L8,BF4,L4,BF4,L8,NL,VROFF,CMVADD,-3,AF5,L4
+
+		DC.B	GF5,L8,EF5,NL,L4+L4,EF5,L4
+		DC.B	FN5,L8,DF5,NL,L4+L4,AF5,L4
+
+		DC.B	GF5,L8,EF5,NL,L4+L4,EF5,L4
+		DC.B	FN5,L8,DF5,NL,L4+L2
+		DC.B	CMVADD,3
+		DC.B	CMBIAS,12
+		DC.B	LRPAN,LRSET
+
+		DC.B	NL,L8
+
+		DC.B	CMJUMP
+		JDW		T825A
+
+;===============================================;
+;					 PSG 80ch					;
+;===============================================;
+TAB828	EQU		*
+		DC.B	FVR,1AH,1,1,5
+		DC.B	NL,L8
+		DC.B	NL,L1+L1,NL,NL,NL
+T8280	EQU		*
+T828A	EQU		*
+		DC.B	BF3,L1,AF3,BF3,AF3,GF3,AF3,BF3,AF3
+		DC.B	CMREPT,0,2
+		JDW		T828A
+
+
+T828B	EQU		*
+		DC.B	GF4,L1,FN4,GF4,FN4
+		DC.B	GF4,L1,FN4,GF4,FN4
+		DC.B	GF4,L1,FN4,GF4,FN4
+
+		DC.B	CMJUMP
+		JDW		T828A
+
+;===============================================;
+;					 PSG A0ch					;
+;===============================================;
+TAB82A	EQU		*
+		DC.B	FVR,1AH,1,1,5
+		DC.B	NL,L1+L1,NL,NL,NL
+		DC.B	NL,L8
+T82A0	EQU		*
+T82AA	EQU		*
+		DC.B	GF3,L1,FN3,GF3,FN3,EF3,FN3,GF3,FN3
+		DC.B	CMREPT,0,2
+		JDW		T82AA
+
+T82AB	EQU		*
+		DC.B	BF3,L1,AF3,BF3,AF3
+		DC.B	BF3,L1,AF3,BF3,AF3
+		DC.B	BF3,L1,AF3,BF3,AF3
+
+		DC.B	CMJUMP
+		JDW		T82AA
+;===============================================;
+;					 PSG C0ch					;
+;===============================================;
+TAB82C	EQU		*
+		DC.B	CMNOIS,NOIS7
+		DC.B	NL,L8
+T82CA	EQU		*
+
+		DC.B	0C6H,2,NL,L8-2,PVADD,2,0C6H,2,NL,L8-2,PVADD,-2
+		DC.B	0C6H,2,NL,L8-2,PVADD,2,0C6H,2,NL,L8-2,PVADD,-2
+		DC.B	0C6H,2,NL,L8-2,PVADD,2,0C6H,2,NL,L8-2,PVADD,-4
+		DC.B	0C6H,L8,PVADD,4,0C6H,2,NL,L8-2,PVADD,-2
+
+		DC.B	CMJUMP
+		JDW		T82CA
+
+;===============================================;
+;					 PCM DRUM					;
+;===============================================;
+TAB82D	EQU		*
+		DC.B	NL,L8
+		DC.B	CMBASE,1
+T82D0	EQU		*
+		DC.B	B,L2,S,B,S,1,S2,L2-1
+		DC.B	B,L2,S,LF2,B,L4,S,1,S2,L2-1
+		DC.B	CMJUMP
+		JDW		T82D0
+
+;===============================================;
+;												;
+;					  VOICE						;
+;												;
+;===============================================;
+TIMB82	EQU		*
+;===================< FEV00 >===================;
+		CNF		2,0
+		MD		0,0,0,0,0,0,0,0
+		RSAR	1,28,1,20,0,28,3,16
+		D1R		12,8,10,5
+		D2R		0,0,0,0
+		RRL		15,15,15,15,15,15,15,15
+		TL		36,27,34,0
+;===================< FEV01 >===================;
+		CNF		2,7
+		MD		6,3,5,3,0,0,2,3
+		RSAR	3,31,3,31,2,31,2,31
+		D1R		7,6,9,6
+		D2R		2,2,2,2
+		RRL		15,2,15,1,15,1,15,15
+		TL		25,55,19,0
+;===================< FEV02 >===================;
+		CNF		4,3
+		MD		15,3,1,0,1,7,1,3
+		RSAR	0,31,0,27,0,30,0,30
+		D1R		15,7,6,7
+		D2R		0,10,0,0
+		RRL		15,8,15,8,15,15,15,15
+		TL		0FH,0,0EH,0
+;===================< FEV03 >===================;
+		CNF		2,7
+		MD		4,0,3,4,2,1,2,0
+		RSAR	0,31,0,18,0,31,0,31
+		D1R		4,2,4,10
+		D2R		7,5,6,7
+		RRL		15,1,15,1,15,1,15,1
+		TL		26,22,25,0
+;===================< FEV04 >===================;
+		CNF		0,5
+		MD		3,0,10,0,2,1,3,0
+		RSAR	0,31,0,25,0,31,0,31
+		D1R		2,1,2,14
+		D2R		1,1,1,1
+		RRL		15,1,15,1,15,3,15,1
+		TL		7,38,27,0
+;===================< FEV05 >===================;
+		CNF		0,5
+		MD		7,0,0,7,0,3,1,0
+		RSAR	0,31,0,31,1,31,1,20
+		D1R		13,3,3,2
+		D2R		1,2,2,3
+		RRL		15,3,15,2,15,2,15,5
+		TL		30,22,25,0
+;===================< FEV06 >===================;
+		CNF		5,7
+		MD		1,0,1,0,1,0,1,0
+		RSAR	2,14,1,18,0,20,1,12
+		D1R		8,8,14,3
+		D2R		0,0,0,0
+		RRL		15,1,15,1,15,1,15,1
+		TL		27,0,0,0
+;===================< FEV07 >===================;
+		CNF		0,5
+		MD		7,0,0,7,0,3,1,0
+		RSAR	0,31,0,31,1,31,1,20
+		D1R		13,3,3,2
+		D2R		1,2,2,3
+		RRL		15,3,15,2,15,2,15,5
+		TL		30,22,25,0
+;===================< FEV08 >===================;
+		CNF		0,3
+		MD		7,3,0,3,0,3,1,3
+		RSAR	2,30,3,28,0,28,2,28
+		D1R		13,6,4,1
+		D2R		8,10,3,5
+		RRL		15,11,15,11,15,3,15,2
+		TL		44,34,20,0
+;===================< FEV09 >===================;
+		CNF		0,5
+		MD		3,4,15,4,7,1,1,7
+		RSAR	0,31,0,18,0,31,0,31
+		D1R		4,1,4,12
+		D2R		1,1,1,0
+		RRL		15,1,15,1,15,1,15,1
+		TL		8,22,25,0
+
+; vim: set ft=asm68k sw=4 ts=4 noet:
