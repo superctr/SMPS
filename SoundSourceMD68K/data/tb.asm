@@ -44,13 +44,13 @@
 ;=======================================;
 
 adrtb:
-		dc.l	prtb					; priority
-		dc.l	backtb					; back se
-		dc.l	bgmtb					; bgm
-		dc.l	setb					; s.e
-		dc.l	prtb					; dmy (vibr)
-		dc.l	envetb					; envelope
-		dc.l	sestrt					; se start no.
+		dc.l	(prtb-adrtb)+rambase	; priority
+		dc.l	(backtb-adrtb)+rambase	; back se
+		dc.l	(bgmtb-adrtb)+rambase	; bgm
+		dc.l	(setb-adrtb)+rambase	; s.e
+		dc.l	(prtb-adrtb)+rambase	; dmy (vibr)
+		dc.l	(envetb-adrtb)+rambase	; envelope
+		dc.l	(sestrt-adrtb)+rambase	; se start no.
 		dc.l	sound					; 7th fix (for sound editor)
 
 ;=======================================;
@@ -97,21 +97,21 @@ EV8		EQU		*
 ;										;
 ;=======================================;
 bgmtb:
-		DC.L	S81						; 81
-		DC.L	S82						; 82
-		DC.L	S83						; 83
-		DC.L	S84						; 84
-		DC.L	S85						; 85
-		DC.L	S86						; 86
-		DC.L	S81						; 87
-		DC.L	S81						; 88
-		DC.L	S81						; 89
-		DC.L	S81						; 8A
-		DC.L	S81						; 8B
-		DC.L	S81						; 8C
-		DC.L	S81						; 8D
-		DC.L	S81						; 8E
-		DC.L	S81						; 8F
+		DC.L	(S81-adrtb)+rambase		; 81
+		DC.L	(S82-adrtb)+rambase		; 82
+		DC.L	(S83-adrtb)+rambase		; 83
+		DC.L	(S84-adrtb)+rambase		; 84
+		DC.L	(S85-adrtb)+rambase		; 85
+		DC.L	(S86-adrtb)+rambase		; 86
+		DC.L	(S81-adrtb)+rambase		; 87
+		DC.L	(S81-adrtb)+rambase		; 88
+		DC.L	(S81-adrtb)+rambase		; 89
+		DC.L	(S81-adrtb)+rambase		; 8A
+		DC.L	(S81-adrtb)+rambase		; 8B
+		DC.L	(S81-adrtb)+rambase		; 8C
+		DC.L	(S81-adrtb)+rambase		; 8D
+		DC.L	(S81-adrtb)+rambase		; 8E
+		DC.L	(S81-adrtb)+rambase		; 8F
 
 ;=======================================;
 ;										;

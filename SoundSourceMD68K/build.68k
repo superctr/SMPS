@@ -9,6 +9,18 @@
 	org		0
 	incbin "data/editor/PatchedED11.bin"
 
+rambase		equ	$ff2000
+	org		$b000
+copy_routine
+	lea		adrtb,a0
+	lea		sound,a1
+	lea		rambase,a2
+@loop
+	move.l	(a0)+,(a2)+
+	cmpa.l	a0,a1
+	bcc.s	@loop
+	rts
+
 	org		sound_top
 
 	include "data/tb.asm"
